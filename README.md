@@ -32,6 +32,6 @@ Perl Script to read the UT61E DMM from UNI-T
 
 -Uses Device::SerialPort to read the UT61e DMM over the serial port
 -
-Usage: perl serial.pl [opt -l] [Device Port] Example: perl serial.pl -l /dev/ttyUSB0 
+Usage: perl ut61e-ser.pl [opt -l] [Device Port] Example: perl ut61e-ser.pl -l /dev/ttyUSB0 
   -l  Logs to /var/log/ut61e.log
   
