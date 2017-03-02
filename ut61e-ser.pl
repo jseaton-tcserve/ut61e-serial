@@ -45,16 +45,20 @@ my $ol = '0';
 my $ul = '0';
 my $vahz = '0';
 my $isset = '0';
-
+my $datestring=localtime();
+    if ($OPT0 ne $lswt){
+        $datestring = '';
+        }
+        
 #my $PORT = '/dev/ttyUSB0';
 
     if (!$OPT0) {
-        print "\nMust specify the device port at least!\n\nUsage: perl serial.pl [opt -l] [Device Port]\n\nExample: perl serial.pl -l /dev/ttyUSB0\n\n-l  Log to /var/log/ut61e.log\n\n";
+        print "\nMust specify the device port at least!\n\nUsage: perl ut61e-ser.pl [opt -l] opt [Device Port]\n\nExample: perl ut61e-ser.pl -l /dev/ttyUSB0\n\n-l  Log to /var/log/ut61e.log\n\n";
         last;
         }
-    if ($OPT0 eq $lswt) { #Check if looging requested
+    if ($OPT0 eq $lswt ) { #Check if logging or timestamp requested
         if (!$OPT1) { # Make sure a port was also given
-            print "\nMust specify the device port as well!\n\nUsage: perl serial.pl [opt -l] [Device Port]\n\nExample: perl serial.pl -l /dev/ttyUSB0\n\n-l  Log to /var/log/ut61e.log\n\n";
+            print "\nMust specify the device port as well!\n\nUsage: perl ut61e-ser.pl [opt -l] [Device Port]\n\nExample: perl ut61e-ser.pl -l /dev/ttyUSB0\n\n-l  Log to /var/log/ut61e.log\n\n";
             exit;
         }
     }
@@ -111,7 +115,7 @@ my $ob = new Device::SerialPort ($PORT);
     $ob->handshake ('none');
     $ob->stty_istrip;
     $ob->stty_inpck;
-    #$ob->stty_icrnl (1);   #examples-Test code/Perl # perl  bittest.pl 
+    #$ob->stty_icrnl (1);    
     #$ob->stty_ocrnl (1);
     #$ob->stty_onlcr (1);
     #$ob->stty_opost (1);
@@ -171,9 +175,11 @@ while (1){
 #*******Check Sign bit in Status**********
         $isset = bit_test($sbyte[8],'4');
             if($isset == 4){
-                print " \n - ";
-                }
-                
+                print " \n$datestring - ";
+                }else{
+                    print $datestring;
+                    }
+                    
 #*******Check if OL bit is set and make sure ascii data is defined in $sbyte 
         $isset = bit_test($sbyte[8], '1'); #OL is the first bit
         if ($isset == '1'){
@@ -351,6 +357,8 @@ while (1){
                 }elsif($datablk[7] eq '32' && $isset == 8 && ($ul == '1' ||  $ol == '1')){
                     print " % ";
                 }
+#***********Amperage Section**********
+
 #***********uA Current************
             if($ul != '1'){
             my $hz_duty = vahz_test($sbyte[11],$sbyte[8]); #Tests the Status and Opt3 bytes to see if Hz or Duty Cycle
@@ -375,13 +383,14 @@ while (1){
                     print " % ";
                 }
            #Catch if in the above mode but no digits should be shown
-            if($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul == '1' ||  $ol == '1')) {
+            if($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul != '1' ||  $ol != '1')) {
                 print " uA ";
-                }elsif($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul != '1' ||  $ol != '1')){
                     print " HZ ";
-                }elsif($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '3d' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul != '1' ||  $ol != '1')){
                     print " % ";
-                }
+                }my $tswt = "-t"; # to add timestamp
+                 
 #***********mA Current************
             if($datablk[7] ne '3f'){ 
                 # Not mA current so the remaining tests will stop
@@ -389,26 +398,26 @@ while (1){
                     #Stop because OL
                 }elsif ($ul == '1'){
                     #Stop because UL
-                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '0'){
+                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '31' && $hz_duty == '0'){
                     print " $sbyte[2].$sbyte[3]$sbyte[4]$sbyte[5]$sbyte[6] ";
                     print " mA ";
-                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '1'){
+                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '31' && $hz_duty == '1'){
                     print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
                     print " Hz ";
-                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '2'){
+                }elsif ($datablk[7] eq '3f' && $datablk[1] eq '31' && $hz_duty == '2'){
                     print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
                     print " % ";
                 }
                 
             #Catch if in the above mode but no digits should be shown
-            if($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul == '1' ||  $ol == '1')){
+            if($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul != '1' ||  $ol != '1')){
                 print " mA ";
-                }elsif($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul != '1' ||  $ol != '1')){
                     print " HZ ";
-                }elsif($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '3f' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul != '1' ||  $ol != '1')){
                     print " % ";
                 }
-                
+                my $tswt = "-t"; # to add timestamp
 #***********Manual A Current************                
             if($datablk[7] ne '30'){ 
                 # Not manual current so the remaining tests will stop
@@ -428,11 +437,11 @@ while (1){
                 }
                 
             #Catch if in the above mode but no digits should be shown
-            if($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul == '1' ||  $ol == '1')){
+            if($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '0' && ($ul != '1' ||  $ol != '1')){
                 print " A ";
-                }elsif($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '1' && ($ul != '1' ||  $ol != '1')){
                     print " HZ ";
-                }elsif($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul == '1' ||  $ol == '1')){
+                }elsif($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '2' && ($ul != '1' ||  $ol != '1')){
                     print " % ";
                 }
                
@@ -456,8 +465,16 @@ while (1){
             }elsif ($isset eq '0' && defined $sbyte[2]){
                 print " Manual \n";
                 }
+                
         }
+
     #print "skip this read"; 
     }
 
 undef $ob;   
+
+#***********Change Log*************
+#03/02/17 
+#-Changed  line 52 and 57 to show the new name of the perl script
+#-Corrected the checks for Hz/Duty Cycle mode in the Amperage Section
+#-Added Datestring when logging to file
