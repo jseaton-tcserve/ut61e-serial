@@ -4,7 +4,7 @@
 # Email : jseaton@tcserve.com
 # Files : ut61e-ser.pl
 # Program : ut61e-ser.pl
-# Version : 1.0 
+# Version : 1.1 
 # Purpose : Reads the output from the UNI-T UT61E DMM
 # Interpreter : Perl v5.18.2 Linux
 # Tested OS : OpenSuse Leap 42.1 
