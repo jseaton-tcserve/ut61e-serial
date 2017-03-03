@@ -4,7 +4,7 @@
 # Email : jseaton@tcserve.com
 # Files : ut61e-ser.pl
 # Program : ut61e-ser.pl
-# Version : 1.1 
+# Version : 1.0 
 # Purpose : Reads the output from the UNI-T UT61E DMM
 # Interpreter : Perl v5.18.2 Linux
 # Tested OS : OpenSuse Leap 42.1 
@@ -45,10 +45,6 @@ my $ol = '0';
 my $ul = '0';
 my $vahz = '0';
 my $isset = '0';
-my $datestring=localtime();
-    if ($OPT0 ne $lswt){
-        $datestring = '';
-        }
         
 #my $PORT = '/dev/ttyUSB0';
 
@@ -172,6 +168,12 @@ while (1){
         #printf "Count: $rb|\n";
         #print "Funct:$datablk[7] Range: $datablk[1] Status: $datablk[8] Opt1: $datablk[9] Opt2: $datablk[10] Opt3: $datablk[11] Opt4: $datablk[12]";
 
+        
+#********Get Date if logging option selected*******
+my $datestring=localtime();
+    if ($OPT0 ne $lswt){
+        $datestring = '';
+        }
 #*******Check Sign bit in Status**********
         $isset = bit_test($sbyte[8],'4');
             if($isset == 4){
@@ -478,3 +480,5 @@ undef $ob;
 #-Changed  line 52 and 57 to show the new name of the perl script
 #-Corrected the checks for Hz/Duty Cycle mode in the Amperage Section
 #-Added Datestring when logging to file
+#03/03/17
+#-Moved datestring to while loop to update the time
