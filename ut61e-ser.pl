@@ -401,7 +401,7 @@ my $datestring=localtime();
                 }elsif ($ul == '1'){
                     #Stop because UL
                 }elsif ($datablk[7] eq '3f' && $datablk[1] eq '31' && $hz_duty == '0'){
-                    print " $sbyte[2].$sbyte[3]$sbyte[4]$sbyte[5]$sbyte[6] ";
+                    print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
                     print " mA ";
                 }elsif ($datablk[7] eq '3f' && $datablk[1] eq '31' && $hz_duty == '1'){
                     print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
@@ -428,7 +428,7 @@ my $datestring=localtime();
                 }elsif ($ul == '1'){
                     #Stop because UL
                 }elsif ($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '0'){
-                    print " $sbyte[2].$sbyte[3]$sbyte[4]$sbyte[5]$sbyte[6] ";
+                    print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
                     print " A ";
                 }elsif ($datablk[7] eq '30' && $datablk[1] eq '30' && $hz_duty == '1'){
                     print " $sbyte[2]$sbyte[3]$sbyte[4].$sbyte[5]$sbyte[6] ";
@@ -482,3 +482,5 @@ undef $ob;
 #-Added Datestring when logging to file
 #03/03/17
 #-Moved datestring to while loop to update the time
+#03/07/17
+#-Changed the decimal place for the range in mA adn A current sections
